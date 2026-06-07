@@ -421,10 +421,8 @@
     e.preventDefault();
     let rawNumber = document.getElementById("mobileNumber").value.trim();
     
-    // Remove spaces/dashes
     rawNumber = rawNumber.replace(/[-\s]/g, '');
     
-    // Basic validation: must start with '+'
     if (!rawNumber.startsWith('+')) {
       codeDiv.innerHTML = '<span class="error-message">⚠️ Include country code starting with + (e.g., +2348123456789)</span>';
       codeDiv.style.display = 'flex';
@@ -477,24 +475,23 @@
     }
   });
 
-  // Fixed copy function: only copies valid pair codes (format like 123-456-789)
+  // FIXED COPY FUNCTION - extracts any digit-dash code with at least 2 dashes
   function copyCode() {
     const rawText = codeDiv.innerText;
-    // Extract code that looks like XXX-XXX-XXX (digits and dashes)
-    const codeMatch = rawText.match(/\b\d{3,4}-\d{3,4}-\d{3,4}\b/);
-    if (codeMatch) {
-      const codeToCopy = codeMatch[0];
-      navigator.clipboard.writeText(codeToCopy).then(() => {
+    // Match any sequence that contains digits and dashes, length at least 5, and has at least two dashes
+    const match = rawText.match(/\b[\d\-]{5,}\b/);
+    if (match && match[0].includes('-') && match[0].split('-').length >= 3) {
+      const code = match[0];
+      navigator.clipboard.writeText(code).then(() => {
         const btn = document.getElementById("copy");
         const oldHtml = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
         setTimeout(() => btn.innerHTML = oldHtml, 1800);
-      }).catch(() => alert("Could not copy. Please copy manually."));
+      }).catch(() => alert("Manual copy required"));
     } else {
-      // Show a temporary message that nothing to copy
       const btn = document.getElementById("copy");
       const oldHtml = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-times"></i> No code';
+      btn.innerHTML = '<i class="fas fa-times"></i> No valid code';
       setTimeout(() => btn.innerHTML = oldHtml, 1500);
     }
   }
