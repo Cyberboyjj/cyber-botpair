@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>ℭ𝔜𝔅𝔈ℜ_𝔅𝔒𝔗 • Link WhatsApp</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover" />
+  <title>ℭ𝔜𝔅𝔈ℜ_𝔅𝔒𝔗 • JJJ DEV</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
     * {
@@ -13,72 +13,106 @@
     }
 
     body {
-      background: linear-gradient(145deg, #0b0b0f 0%, #14141c 100%);
+      background: radial-gradient(circle at 20% 30%, #0a0a12, #030308);
       font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, sans-serif;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 20px;
     }
 
     .glass-card {
       max-width: 520px;
       width: 100%;
-      background: rgba(20, 20, 30, 0.75);
-      backdrop-filter: blur(20px);
+      background: rgba(12, 12, 20, 0.75);
+      backdrop-filter: blur(18px);
       border-radius: 48px;
-      padding: 28px 24px 36px;
-      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+      padding: 26px 20px 32px;
+      box-shadow: 0 25px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.08);
-      transition: all 0.3s ease;
     }
 
     .header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 18px;
     }
 
     .logo-ring {
-      width: 84px;
-      height: 84px;
-      margin: 0 auto 18px;
-      background: linear-gradient(135deg, #1a1a2e, #0f0f1a);
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 12px;
+      background: linear-gradient(145deg, #1e1e30, #0b0b14);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 38px;
+      font-size: 36px;
       color: #ffffff;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
       border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .title {
       font-size: 28px;
       font-weight: 800;
-      letter-spacing: -0.3px;
-      background: linear-gradient(120deg, #f0f0ff, #b0b0ff);
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #f0f0ff, #b0b0ff);
       background-clip: text;
       -webkit-background-clip: text;
       color: transparent;
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     .subtitle {
-      font-size: 14px;
+      font-size: 13px;
       color: #9ca3af;
       font-weight: 500;
       border-top: 1px dashed rgba(255, 255, 255, 0.15);
       display: inline-block;
-      padding-top: 8px;
+      padding-top: 6px;
+    }
+
+    /* ----- ANIMATED JJJ DEV BADGE ----- */
+    .jjjdev-wrapper {
+      display: flex;
+      justify-content: center;
+      margin: 12px 0 10px;
+    }
+    .jjjdev {
+      font-family: 'Monoton', 'Courier New', monospace;
+      font-size: 1.9rem;
+      font-weight: bold;
+      background: linear-gradient(45deg, #ffb347, #ff6b6b, #a55dff);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: 3px;
+      animation: glitchFloat 3s infinite ease-in-out, gradientShift 6s infinite alternate;
+      text-shadow: 0 0 5px rgba(255,80,120,0.5);
+      display: inline-block;
+      transform-origin: center;
+    }
+
+    @keyframes glitchFloat {
+      0% { transform: translateY(0px) scale(1); opacity: 0.9; text-shadow: -2px 0 red, 2px 0 blue; }
+      25% { transform: translateY(-3px) scale(1.02); text-shadow: -1px 0 cyan, 1px 0 magenta; }
+      50% { transform: translateY(2px) scale(0.98); text-shadow: 1px 0 lime, -1px 0 violet; }
+      75% { transform: translateY(-1px) scale(1.01); text-shadow: -2px 0 orange, 2px 0 deepskyblue; }
+      100% { transform: translateY(0px) scale(1); text-shadow: -1px 0 red, 1px 0 blue; }
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
     }
 
     .social-icons {
       display: flex;
       justify-content: center;
       gap: 18px;
-      margin: 20px 0 24px;
+      margin: 18px 0 20px;
     }
 
     .social-icons a {
@@ -102,30 +136,29 @@
     .social-icons a.github { background: #181717aa; color: white; }
 
     .social-icons a:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       filter: brightness(1.1);
-      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.3);
     }
 
     /* toggle */
     .toggle-modern {
       display: flex;
-      background: rgba(0, 0, 0, 0.45);
+      background: rgba(0, 0, 0, 0.5);
       border-radius: 60px;
-      padding: 6px;
-      margin-bottom: 28px;
+      padding: 5px;
+      margin-bottom: 25px;
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .toggle-option {
       flex: 1;
       text-align: center;
-      padding: 10px 12px;
+      padding: 10px 8px;
       border-radius: 40px;
       font-weight: 600;
-      font-size: 15px;
+      font-size: 14px;
       cursor: pointer;
-      transition: 0.2s ease;
+      transition: 0.2s;
       background: transparent;
       color: #bbb;
       display: flex;
@@ -137,13 +170,11 @@
     .toggle-option.active {
       background: #2c2c3e;
       color: white;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(4px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .input-group {
       margin-bottom: 22px;
-      transition: 0.2s;
     }
 
     .input-group.hidden {
@@ -156,19 +187,17 @@
       font-weight: 500;
       margin-bottom: 8px;
       color: #cfcfef;
-      letter-spacing: 0.3px;
     }
 
     .input-field {
       width: 100%;
       padding: 14px 18px;
-      background: rgba(10, 10, 18, 0.8);
+      background: rgba(10, 10, 18, 0.9);
       border: 1.5px solid rgba(255, 255, 255, 0.2);
-      border-radius: 32px;
+      border-radius: 40px;
       font-size: 16px;
       color: #f0f0ff;
       outline: none;
-      transition: 0.2s;
     }
 
     .input-field:focus {
@@ -187,12 +216,11 @@
       color: white;
       cursor: pointer;
       margin-bottom: 20px;
-      transition: 0.2s;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.3);
+      gap: 8px;
+      transition: 0.2s;
     }
 
     .generate-btn:hover {
@@ -212,7 +240,6 @@
       text-align: center;
       font-weight: 700;
       font-size: 18px;
-      letter-spacing: 1px;
       margin-bottom: 18px;
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: #d6d6ff;
@@ -222,23 +249,23 @@
       background: rgba(0, 0, 0, 0.5);
       backdrop-filter: blur(8px);
       border-radius: 36px;
-      padding: 24px;
+      padding: 20px;
       text-align: center;
       margin-bottom: 18px;
       display: none;
     }
 
     .qr-image {
-      max-width: 260px;
+      max-width: 240px;
       width: 100%;
       border-radius: 24px;
       background: white;
-      padding: 12px;
-      margin-bottom: 16px;
+      padding: 10px;
+      margin-bottom: 12px;
     }
 
     .qr-instructions {
-      font-size: 13px;
+      font-size: 12px;
       color: #bdbde2;
     }
 
@@ -255,7 +282,6 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      transition: 0.2s;
       color: #cdcdff;
     }
 
@@ -266,12 +292,12 @@
 
     .loading {
       text-align: center;
-      margin: 16px 0;
+      margin: 14px 0;
       display: none;
     }
 
     .loading i {
-      font-size: 28px;
+      font-size: 26px;
       color: #a0a0ff;
       animation: spin 1s infinite linear;
     }
@@ -280,17 +306,12 @@
       to { transform: rotate(360deg); }
     }
 
-    .success-message {
-      color: #a3ffb0;
-      font-weight: 600;
-    }
-    .error-message {
-      color: #ffa8a8;
-    }
+    .success-message { color: #a3ffb0; }
+    .error-message { color: #ffa8a8; }
 
     .footer {
       text-align: center;
-      margin-top: 28px;
+      margin-top: 26px;
       font-size: 11px;
       color: #5f5f8a;
     }
@@ -299,9 +320,14 @@
 <body>
 <div class="glass-card">
   <div class="header">
-    <div class="logo-ring"><i class="fas fa-shield-halored"></i></div>
+    <div class="logo-ring"><i class="fas fa-crown"></i></div>
     <h1 class="title">ℭ𝔜𝔅𝔈ℜ_𝔅𝔒𝔗</h1>
-    <div class="subtitle">pair • link • secure</div>
+    <div class="subtitle">pair • secure • instant</div>
+  </div>
+
+  <!-- ANIMATED JJJ DEV SECTION -->
+  <div class="jjjdev-wrapper">
+    <div class="jjjdev">⚡ JJJ DEV ⚡</div>
   </div>
 
   <div class="social-icons">
@@ -318,22 +344,22 @@
   </div>
 
   <div class="input-group" id="inputGroup">
-    <label class="input-label">📱 WhatsApp number (with country code)</label>
+    <label class="input-label">📞 WhatsApp number (country code)</label>
     <input type="tel" id="mobileNumber" class="input-field" placeholder="+2348123456789" value="+234">
   </div>
 
   <button class="generate-btn" id="submit"><i class="fas fa-link"></i> Generate Pair Code</button>
 
-  <div class="loading" id="loading"><i class="fas fa-spinner"></i> requesting...</div>
+  <div class="loading" id="loading"><i class="fas fa-spinner"></i> processing...</div>
 
-  <div class="code-display" id="codeDisplay">⚡ your code will appear here</div>
+  <div class="code-display" id="codeDisplay">✨ code will appear here</div>
   <div class="qr-display" id="qrDisplay">
     <img id="qrImage" class="qr-image" alt="QR Code">
     <div class="qr-instructions" id="qrInstructions">Scan with WhatsApp → Linked Devices</div>
   </div>
 
   <button class="copy-btn" id="copy"><i class="fas fa-copy"></i> Copy Code</button>
-  <div class="footer">© 2027 JJJ DEV • encrypted session • instant pairing</div>
+  <div class="footer">© 2027 JJJ DEV | animated by JJJ DEV</div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js"></script>
@@ -362,7 +388,7 @@
         submitBtn.classList.remove('hidden');
         qrDiv.style.display = 'none';
         codeDiv.style.display = 'flex';
-        codeDiv.innerHTML = '⚡ enter number & generate code';
+        codeDiv.innerHTML = '📱 enter number & generate code';
       } else {
         inputGroup.classList.add('hidden');
         submitBtn.classList.add('hidden');
@@ -384,11 +410,11 @@
         qrDiv.style.display = 'block';
       } else {
         codeDiv.style.display = 'flex';
-        codeDiv.innerHTML = '<span class="error-message"><i class="fas fa-exclamation-triangle"></i> QR failed</span>';
+        codeDiv.innerHTML = '<span class="error-message">⚠️ QR generation failed</span>';
       }
     } catch (err) {
       codeDiv.style.display = 'flex';
-      codeDiv.innerHTML = '<span class="error-message"><i class="fas fa-ban"></i> QR error, retry</span>';
+      codeDiv.innerHTML = '<span class="error-message">❌ QR error, try again</span>';
     } finally {
       loading.style.display = 'none';
     }
@@ -398,7 +424,7 @@
     e.preventDefault();
     let rawNumber = document.getElementById("mobileNumber").value.trim();
     if (!rawNumber) {
-      codeDiv.innerHTML = '<span class="error-message"><i class="fas fa-exclamation-circle"></i> enter number first</span>';
+      codeDiv.innerHTML = '<span class="error-message">⚠️ enter number first</span>';
       codeDiv.style.display = 'flex';
       return;
     }
@@ -414,10 +440,10 @@
       if (pairCode && pairCode !== "Service Unavailable") {
         codeDiv.innerHTML = `<span class="success-message"><i class="fas fa-check-circle"></i> CODE: ${pairCode}</span>`;
       } else {
-        codeDiv.innerHTML = '<span class="error-message"><i class="fas fa-skull-crosswalk"></i> service unavailable</span>';
+        codeDiv.innerHTML = '<span class="error-message">🚫 service unavailable</span>';
       }
     } catch (error) {
-      codeDiv.innerHTML = '<span class="error-message"><i class="fas fa-bug"></i> network / server error</span>';
+      codeDiv.innerHTML = '<span class="error-message">🌐 network / server error</span>';
     } finally {
       loading.style.display = 'none';
     }
@@ -426,7 +452,7 @@
   function copyCode() {
     const rawText = codeDiv.innerText;
     let codeOnly = rawText.replace('CODE:', '').trim();
-    if (codeOnly.includes('your code will appear') || codeOnly.includes('error')) return;
+    if (codeOnly.includes('code will appear') || codeOnly.includes('error') || codeOnly.includes('enter number')) return;
     navigator.clipboard.writeText(codeOnly).then(() => {
       const btn = document.getElementById("copy");
       const oldHtml = btn.innerHTML;
