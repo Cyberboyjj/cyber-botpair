@@ -421,10 +421,10 @@
     e.preventDefault();
     let rawNumber = document.getElementById("mobileNumber").value.trim();
     
-    // Remove any spaces or dashes
+    // Remove spaces/dashes
     rawNumber = rawNumber.replace(/[-\s]/g, '');
     
-    // Basic validation: must start with '+' and have at least 10 digits after plus
+    // Basic validation: must start with '+'
     if (!rawNumber.startsWith('+')) {
       codeDiv.innerHTML = '<span class="error-message">⚠️ Include country code starting with + (e.g., +2348123456789)</span>';
       codeDiv.style.display = 'flex';
@@ -450,7 +450,6 @@
     codeDiv.innerHTML = '⏳ requesting pair code...';
 
     try {
-      // Send only digits (no +) to backend
       const numberDigits = digitsOnly;
       const response = await axios(`/pair?number=${numberDigits}`);
       const pairCode = response.data.code;
@@ -478,18 +477,26 @@
     }
   });
 
+  // Fixed copy function: only copies valid pair codes (format like 123-456-789)
   function copyCode() {
     const rawText = codeDiv.innerText;
-    let codeOnly = rawText.replace('CODE:', '').trim();
-    if (codeOnly.includes('enter number') || codeOnly.includes('error') || codeOnly.includes('requesting') || codeOnly.includes('will appear') || codeOnly.includes('Service')) {
-      return;
-    }
-    navigator.clipboard.writeText(codeOnly).then(() => {
+    // Extract code that looks like XXX-XXX-XXX (digits and dashes)
+    const codeMatch = rawText.match(/\b\d{3,4}-\d{3,4}-\d{3,4}\b/);
+    if (codeMatch) {
+      const codeToCopy = codeMatch[0];
+      navigator.clipboard.writeText(codeToCopy).then(() => {
+        const btn = document.getElementById("copy");
+        const oldHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+        setTimeout(() => btn.innerHTML = oldHtml, 1800);
+      }).catch(() => alert("Could not copy. Please copy manually."));
+    } else {
+      // Show a temporary message that nothing to copy
       const btn = document.getElementById("copy");
       const oldHtml = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
-      setTimeout(() => btn.innerHTML = oldHtml, 1800);
-    }).catch(() => alert("Manual copy"));
+      btn.innerHTML = '<i class="fas fa-times"></i> No code';
+      setTimeout(() => btn.innerHTML = oldHtml, 1500);
+    }
   }
   document.getElementById("copy").onclick = copyCode;
 </script>
