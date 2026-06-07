@@ -1,55 +1,65 @@
 import express from 'express';
 import fs from 'fs';
 import pino from 'pino';
-import { makeWASocket, useMultiFileAuthState, delay, makeCacheableSignalKeyStore, Browsers, jidNormalizedUser, fetchLatestBaileysVersion } from '@whiskeysockets/baileys';
+import {
+    makeWASocket,
+    useMultiFileAuthState,
+    delay,
+    makeCacheableSignalKeyStore,
+    Browsers,
+    jidNormalizedUser,
+    fetchLatestBaileysVersion
+} from '@whiskeysockets/baileys';
 import pn from 'awesome-phonenumber';
 
 const router = express.Router();
 
-// Ensure the session directory exists
-function removeFile(FilePath) {
+// Helper to remove session folder
+function removeFile(filePath) {
     try {
-        if (!fs.existsSync(FilePath)) return false;
-        fs.rmSync(FilePath, { recursive: true, force: true });
+        if (!fs.existsSync(filePath)) return false;
+        fs.rmSync(filePath, { recursive: true, force: true });
+        console.log(`🧹 Removed session: ${filePath}`);
     } catch (e) {
-        console.error('Error removing file:', e);
+        console.error('❌ Error removing file:', e);
     }
 }
 
 router.get('/', async (req, res) => {
     let num = req.query.number;
-    let dirs = './' + (num || `session`);
+    if (!num) {
+        return res.status(400).json({ code: 'Missing phone number' });
+    }
 
-    // Remove existing session if present
-    await removeFile(dirs);
+    // Use number as folder name (sanitized)
+    const sessionDir = `./${num.replace(/[^0-9]/g, '')}`;
 
-    // Clean the phone number - remove any non-digit characters
+    // Remove any existing session for this number
+    await removeFile(sessionDir);
+
+    // Clean number and validate
     num = num.replace(/[^0-9]/g, '');
-
-    // Validate the phone number using awesome-phonenumber
     const phone = pn('+' + num);
     if (!phone.isValid()) {
-        if (!res.headersSent) {
-            return res.status(400).send({ code: 'Invalid phone number. Please enter your full international number (e.g., 15551234567 for US, 447911123456 for UK, 84987654321 for Vietnam, etc.) without + or spaces.' });
-        }
-        return;
+        return res.status(400).json({
+            code: 'Invalid phone number. Use international format without + or spaces (e.g., 2349065296638)'
+        });
     }
-    // Use the international number format (E.164, without '+')
     num = phone.getNumber('e164').replace('+', '');
 
     async function initiateSession() {
-        const { state, saveCreds } = await useMultiFileAuthState(dirs);
+        const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
 
         try {
-            const { version, isLatest } = await fetchLatestBaileysVersion();
-            let KnightBot = makeWASocket({
+            const { version } = await fetchLatestBaileysVersion();
+            const cyberBot = makeWASocket({
                 version,
                 auth: {
                     creds: state.creds,
-                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: "fatal" }).child({ level: "fatal" })),
+                    keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'fatal' }).child({ level: 'fatal' }))
                 },
                 printQRInTerminal: false,
-                logger: pino({ level: "fatal" }).child({ level: "fatal" }),
+                logger: pino({ level: 'fatal' }).child({ level: 'fatal' }),
                 browser: Browsers.windows('Chrome'),
                 markOnlineOnConnect: false,
                 generateHighQualityLinkPreview: false,
@@ -57,105 +67,92 @@ router.get('/', async (req, res) => {
                 connectTimeoutMs: 60000,
                 keepAliveIntervalMs: 30000,
                 retryRequestDelayMs: 250,
-                maxRetries: 5,
+                maxRetries: 5
             });
 
-            KnightBot.ev.on('connection.update', async (update) => {
+            cyberBot.ev.on('connection.update', async (update) => {
                 const { connection, lastDisconnect, isNewLogin, isOnline } = update;
 
                 if (connection === 'open') {
-                    console.log("✅ Connected successfully!");
-                    console.log("📱 Sending session file to user...");
-                    
-                    try {
-                        const sessionKnight = fs.readFileSync(dirs + '/creds.json');
+                    console.log('✅ ℭ𝔜𝔅𝔈ℜ_𝔅𝔒𝔗 connected successfully!');
+                    console.log('📤 Sending session file to user...');
 
-                        // Send session file to user
-                        const userJid = jidNormalizedUser(num + '@s.whatsapp.net');
-                        await KnightBot.sendMessage(userJid, {
-                            document: sessionKnight,
+                    try {
+                        const credsFile = fs.readFileSync(`${sessionDir}/creds.json`);
+                        const userJid = jidNormalizedUser(`${num}@s.whatsapp.net`);
+
+                        // Send creds.json
+                        await cyberBot.sendMessage(userJid, {
+                            document: credsFile,
                             mimetype: 'application/json',
                             fileName: 'creds.json'
                         });
-                        console.log("📄 Session file sent successfully");
+                        console.log('📄 creds.json sent');
 
-                        // Send video thumbnail with caption
-                        await KnightBot.sendMessage(userJid, {
+                        // Send setup guide (image + caption)
+                        await cyberBot.sendMessage(userJid, {
                             image: { url: 'https://drive.google.com/file/d/1J0XGXkHAIS3hvuCIFt-1t8iCdE2c1t3k/view?usp=sharing' },
-                            caption: `🎬 *ℭ𝔜𝔅𝔈ℜ_𝔅𝔒𝔗 Full Setup Guide!*\n\n🚀 Bug Fixes + New Commands + Fast AI Chat\n📺 Watch Now: https://jjokpanachi.vercel.app`
+                            caption: `🎬 *ℭ𝔜𝔅𝔈ℜ_𝔅𝔒𝔗 Full Setup Guide!*\n\n🚀 Bug fixes + new commands + fast AI chat\n📺 Watch: https://jjokpanachi.vercel.app`
                         });
-                        console.log("🎬 Video guide sent successfully");
+                        console.log('🎬 Setup guide sent');
 
-                        // Send warning message
-                        await KnightBot.sendMessage(userJid, {
-                            text: `⚠️Do not share this file with anybody⚠️\n 
-┌┤✑  Thanks for using ℭ𝔜𝔅𝔈ℜ_𝔅𝔒𝔗
-│└────────────┈ ⳹        
-│©2027 JJJ Dev  
-└─────────────────┈ ⳹\n\n`
+                        // Warning message
+                        await cyberBot.sendMessage(userJid, {
+                            text: `⚠️ *DO NOT SHARE THIS FILE WITH ANYONE* ⚠️\n\n┌┤✑ Thanks for using ℭ𝔜𝔅𝔈ℜ_𝔅𝔒𝔗\n│└────────────┈ ⳹\n│© 2027 JJJ DEV\n└─────────────────┈ ⳹`
                         });
-                        console.log("⚠️ Warning message sent successfully");
+                        console.log('⚠️ Warning message sent');
 
-                        // Clean up session after use
-                        console.log("🧹 Cleaning up session...");
+                        // Cleanup session
+                        console.log('🧹 Cleaning session...');
                         await delay(1000);
-                        removeFile(dirs);
-                        console.log("✅ Session cleaned up successfully");
-                        console.log("🎉 Process completed successfully!");
-                        // Do not exit the process, just finish gracefully
-                    } catch (error) {
-                        console.error("❌ Error sending messages:", error);
-                        // Still clean up session even if sending fails
-                        removeFile(dirs);
-                        // Do not exit the process, just finish gracefully
+                        removeFile(sessionDir);
+                        console.log('✅ Session cleaned. Process complete.');
+                    } catch (err) {
+                        console.error('❌ Error sending files/messages:', err);
+                        removeFile(sessionDir);
                     }
                 }
 
-                if (isNewLogin) {
-                    console.log("🔐 New login via pair code");
-                }
-
-                if (isOnline) {
-                    console.log("📶 Client is online");
-                }
+                if (isNewLogin) console.log('🔐 New login via pair code');
+                if (isOnline) console.log('📶 Bot is online');
 
                 if (connection === 'close') {
                     const statusCode = lastDisconnect?.error?.output?.statusCode;
-
                     if (statusCode === 401) {
-                        console.log("❌ Logged out from WhatsApp. Need to generate new pair code.");
+                        console.log('❌ Logged out – need new pair code');
                     } else {
-                        console.log("🔁 Connection closed — restarting...");
+                        console.log('🔁 Connection closed, restarting session...');
                         initiateSession();
                     }
                 }
             });
 
-            if (!KnightBot.authState.creds.registered) {
-                await delay(3000); // Wait 3 seconds before requesting pairing code
-                num = num.replace(/[^\d+]/g, '');
-                if (num.startsWith('+')) num = num.substring(1);
+            // Request pairing code if not registered
+            if (!cyberBot.authState.creds.registered) {
+                await delay(3000);
+                let cleanNum = num.replace(/[^\d+]/g, '');
+                if (cleanNum.startsWith('+')) cleanNum = cleanNum.substring(1);
 
                 try {
-                    let code = await KnightBot.requestPairingCode(num);
-                    code = code?.match(/.{1,4}/g)?.join('-') || code;
+                    let pairCode = await cyberBot.requestPairingCode(cleanNum);
+                    pairCode = pairCode?.match(/.{1,4}/g)?.join('-') || pairCode;
                     if (!res.headersSent) {
-                        console.log({ num, code });
-                        await res.send({ code });
+                        console.log(`📱 Pairing code for ${num}: ${pairCode}`);
+                        return res.json({ code: pairCode });
                     }
-                } catch (error) {
-                    console.error('Error requesting pairing code:', error);
+                } catch (err) {
+                    console.error('❌ Pairing code error:', err);
                     if (!res.headersSent) {
-                        res.status(503).send({ code: 'Failed to get pairing code. Please check your phone number and try again.' });
+                        return res.status(503).json({ code: 'Failed to get pairing code. Check number and try again.' });
                     }
                 }
             }
 
-            KnightBot.ev.on('creds.update', saveCreds);
+            cyberBot.ev.on('creds.update', saveCreds);
         } catch (err) {
-            console.error('Error initializing session:', err);
+            console.error('❌ Session init error:', err);
             if (!res.headersSent) {
-                res.status(503).send({ code: 'Service Unavailable' });
+                return res.status(503).json({ code: 'Service Unavailable' });
             }
         }
     }
@@ -163,21 +160,16 @@ router.get('/', async (req, res) => {
     await initiateSession();
 });
 
-// Global uncaught exception handler
+// Global exception handler (silence known Baileys noise)
 process.on('uncaughtException', (err) => {
-    let e = String(err);
-    if (e.includes("conflict")) return;
-    if (e.includes("not-authorized")) return;
-    if (e.includes("Socket connection timeout")) return;
-    if (e.includes("rate-overlimit")) return;
-    if (e.includes("Connection Closed")) return;
-    if (e.includes("Timed Out")) return;
-    if (e.includes("Value not found")) return;
-    if (e.includes("Stream Errored")) return;
-    if (e.includes("Stream Errored (restart required)")) return;
-    if (e.includes("statusCode: 515")) return;
-    if (e.includes("statusCode: 503")) return;
-    console.log('Caught exception: ', err);
+    const msg = String(err);
+    const ignored = [
+        'conflict', 'not-authorized', 'Socket connection timeout', 'rate-overlimit',
+        'Connection Closed', 'Timed Out', 'Value not found', 'Stream Errored',
+        'statusCode: 515', 'statusCode: 503'
+    ];
+    if (ignored.some(i => msg.includes(i))) return;
+    console.error('💥 Uncaught exception:', err);
 });
 
 export default router;
