@@ -73,7 +73,7 @@
       padding-top: 6px;
     }
 
-    /* ----- ANIMATED JJJ DEV BADGE ----- */
+    /* ANIMATED JJJ DEV BADGE */
     .jjjdev-wrapper {
       display: flex;
       justify-content: center;
@@ -140,7 +140,6 @@
       filter: brightness(1.1);
     }
 
-    /* toggle */
     .toggle-modern {
       display: flex;
       background: rgba(0, 0, 0, 0.5);
@@ -325,7 +324,6 @@
     <div class="subtitle">pair • secure • instant</div>
   </div>
 
-  <!-- ANIMATED JJJ DEV SECTION -->
   <div class="jjjdev-wrapper">
     <div class="jjjdev">⚡ JJJ DEV ⚡</div>
   </div>
@@ -337,22 +335,21 @@
     <a href="https://github.com/Cyberboyjj/" target="_blank" class="github"><i class="fab fa-github"></i></a>
   </div>
 
-  <!-- Toggle -->
   <div class="toggle-modern">
     <div class="toggle-option active" data-mode="pair"><i class="fas fa-key"></i> Pair Code</div>
     <div class="toggle-option" data-mode="qr"><i class="fas fa-qrcode"></i> QR Code</div>
   </div>
 
   <div class="input-group" id="inputGroup">
-    <label class="input-label">📞 WhatsApp number (country code)</label>
-    <input type="tel" id="mobileNumber" class="input-field" placeholder="+2348123456789" value="+234">
+    <label class="input-label">📞 WhatsApp number (with country code)</label>
+    <input type="tel" id="mobileNumber" class="input-field" placeholder="+2348123456789">
   </div>
 
   <button class="generate-btn" id="submit"><i class="fas fa-link"></i> Generate Pair Code</button>
 
   <div class="loading" id="loading"><i class="fas fa-spinner"></i> processing...</div>
 
-  <div class="code-display" id="codeDisplay">✨ code will appear here</div>
+  <div class="code-display" id="codeDisplay">✨ enter your number and tap generate</div>
   <div class="qr-display" id="qrDisplay">
     <img id="qrImage" class="qr-image" alt="QR Code">
     <div class="qr-instructions" id="qrInstructions">Scan with WhatsApp → Linked Devices</div>
@@ -423,27 +420,59 @@
   document.getElementById("submit").addEventListener("click", async (e) => {
     e.preventDefault();
     let rawNumber = document.getElementById("mobileNumber").value.trim();
-    if (!rawNumber) {
-      codeDiv.innerHTML = '<span class="error-message">⚠️ enter number first</span>';
+    
+    // Remove any spaces or dashes
+    rawNumber = rawNumber.replace(/[-\s]/g, '');
+    
+    // Basic validation: must start with '+' and have at least 10 digits after plus
+    if (!rawNumber.startsWith('+')) {
+      codeDiv.innerHTML = '<span class="error-message">⚠️ Include country code starting with + (e.g., +2348123456789)</span>';
       codeDiv.style.display = 'flex';
       return;
     }
-    const cleanNum = rawNumber.replace(/[^0-9+]/g, '');
+    
+    const digitsOnly = rawNumber.replace(/[^0-9]/g, '');
+    if (digitsOnly.length < 10) {
+      codeDiv.innerHTML = '<span class="error-message">⚠️ Number too short — enter full international number</span>';
+      codeDiv.style.display = 'flex';
+      return;
+    }
+    
+    if (digitsOnly.length > 15) {
+      codeDiv.innerHTML = '<span class="error-message">⚠️ Number too long — max 15 digits</span>';
+      codeDiv.style.display = 'flex';
+      return;
+    }
+    
     loading.style.display = 'block';
     codeDiv.style.display = 'flex';
     qrDiv.style.display = 'none';
-    codeDiv.innerHTML = '⏳ generating pair code...';
+    codeDiv.innerHTML = '⏳ requesting pair code...';
 
     try {
-      const response = await axios(`/pair?number=${cleanNum.replace(/[^0-9]/g, '')}`);
+      // Send only digits (no +) to backend
+      const numberDigits = digitsOnly;
+      const response = await axios(`/pair?number=${numberDigits}`);
       const pairCode = response.data.code;
-      if (pairCode && pairCode !== "Service Unavailable") {
+      
+      if (pairCode && pairCode !== "Service Unavailable" && typeof pairCode === 'string' && pairCode.includes('-')) {
         codeDiv.innerHTML = `<span class="success-message"><i class="fas fa-check-circle"></i> CODE: ${pairCode}</span>`;
+      } else if (pairCode && pairCode.includes("Invalid")) {
+        codeDiv.innerHTML = `<span class="error-message">⚠️ ${pairCode}</span>`;
       } else {
-        codeDiv.innerHTML = '<span class="error-message">🚫 service unavailable</span>';
+        codeDiv.innerHTML = '<span class="error-message">🚫 Service unavailable or number invalid — check and retry</span>';
       }
     } catch (error) {
-      codeDiv.innerHTML = '<span class="error-message">🌐 network / server error</span>';
+      console.error(error);
+      let errorMsg = '🌐 Network / server error. Try again later.';
+      if (error.response && error.response.data && error.response.data.code) {
+        errorMsg = error.response.data.code;
+      } else if (error.response && error.response.status === 400) {
+        errorMsg = '❌ Invalid number format. Use full international number.';
+      } else if (error.response && error.response.status === 503) {
+        errorMsg = '⏳ Service busy. Please retry in a moment.';
+      }
+      codeDiv.innerHTML = `<span class="error-message">${errorMsg}</span>`;
     } finally {
       loading.style.display = 'none';
     }
@@ -452,13 +481,15 @@
   function copyCode() {
     const rawText = codeDiv.innerText;
     let codeOnly = rawText.replace('CODE:', '').trim();
-    if (codeOnly.includes('code will appear') || codeOnly.includes('error') || codeOnly.includes('enter number')) return;
+    if (codeOnly.includes('enter number') || codeOnly.includes('error') || codeOnly.includes('requesting') || codeOnly.includes('will appear') || codeOnly.includes('Service')) {
+      return;
+    }
     navigator.clipboard.writeText(codeOnly).then(() => {
       const btn = document.getElementById("copy");
       const oldHtml = btn.innerHTML;
       btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
       setTimeout(() => btn.innerHTML = oldHtml, 1800);
-    }).catch(() => alert("manual copy"));
+    }).catch(() => alert("Manual copy"));
   }
   document.getElementById("copy").onclick = copyCode;
 </script>
