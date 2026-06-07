@@ -1,27 +1,24 @@
 {
-  "name": "jjj pair",
+  "name": "cyber_bot-session-generator",
   "version": "1.0.0",
-  "description": "jjj dev - WhatsApp Pair Code Generator",
-  "main": "index.js",
+  "description": "ℭ𝔜𝔅𝔈ℜ_𝔅𝔒𝔗 - WhatsApp Session Generator | JJJ DEV",
+  "main": "server.js",
   "type": "module",
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
-    "start": "node index.js",
-    "build": "echo 'No build step required'"
+    "start": "node server.js",
+    "dev": "node --watch server.js"
   },
-  "author": "Julius Joshua Okpanachi",
+  "author": "JULIUS JOSHUA OKPANACHI (JJJ DEV)",
   "license": "ISC",
   "dependencies": {
     "@whiskeysockets/baileys": "^6.7.21",
-    "awesome-phonenumber": "7.2.0",
+    "awesome-phonenumber": "^7.2.0",
     "body-parser": "^1.20.3",
     "express": "^4.21.2",
-    "path": "^0.12.7",
-    "phone": "3.1.55",
-    "pino": "9.5.0",
-    "qrcode": "^1.5.4",
-    "qrcode-terminal": "^0.12.0"
+    "pino": "^9.5.0",
+    "qrcode": "^1.5.4"
   }
 }
